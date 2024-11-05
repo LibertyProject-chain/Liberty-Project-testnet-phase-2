@@ -52,3 +52,4 @@ profile.cov
 logs/
 geth
 genesis.json
+.gitignore

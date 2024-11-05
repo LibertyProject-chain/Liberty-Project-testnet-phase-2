@@ -3,20 +3,6 @@
 
 Based on the `go-ethereum` v1.11.6 source code with custom modifications to the mining algorithm for research and testing purposes.
 
-## Building the Source
-
-### Dependencies
-
-Building `geth` (Go Ethereum client) requires both Go (version 1.19 or later) and a C compiler. You can install them using your preferred package manager.
-
-### Build Command
-
-To build `geth`, run:
-
-```bash
-make geth
-```
-
 ## Custom Mining Algorithm
 
 Our code has been modified to optimize the mining process and test dynamic block reward distribution. The mining algorithm uses a combined `Blake3/Keccak256` hashing function, and the block reward automatically decreases with time
@@ -95,7 +81,7 @@ mkdir -p ~/liberty
 ### 4. Download Node Software
 
 ```bash
-curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/geth -o /bin/geth
+curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/geth-linux-amd64 -o /bin/geth
 chmod +x ~/bin/geth
 chown -R liberty:liberty ~/bin/geth
 ```
