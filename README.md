@@ -82,7 +82,7 @@ mkdir -p ~/liberty
 
 ```bash
 curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/geth-linux-amd64 -o /bin/geth
-chmod +x ~/bin/geth
+chmod +x /bin/geth
 chown -R liberty:liberty ~/bin/geth
 ```
 
