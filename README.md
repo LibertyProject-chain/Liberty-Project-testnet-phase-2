@@ -69,89 +69,97 @@ Simply input these settings in your wallet to connect seamlessly with the Libert
 
 
 ```bash
-useradd -m liberty
+sudo useradd -m -s /bin/bash liberty
 ```
 
 ### 3. Create Directories to Store Blockchain Data and Node Software
 
 ```bash
-mkdir -p ~/liberty
+sudo mkdir -p /home/liberty/liberty
+```
+
+```bash
+sudo chown liberty:liberty /home/liberty/liberty
 ```
 
 ### 4. Download Node Software
 
 ```bash
-curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/geth-linux-amd64 -o /bin/geth
-chmod +x /bin/geth
-chown -R liberty:liberty /bin/geth
+sudo curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/geth-linux-amd64 -o /usr/local/bin/geth
 ```
 
-### 5. Create a Systemd Unit File
+```bash
+sudo chmod +x /usr/local/bin/geth
+```
 
-Create the file `/etc/systemd/system/liberty-node.service` with the following content:
+### 5. Download and Initialize the Genesis File
 
+Download the genesis file to the liberty user's directory:
+```bash
+sudo curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/genesis.json -o /home/liberty/liberty/genesis.json
+sudo chown liberty:liberty /home/liberty/liberty/genesis.json
+```
+
+### 6. Initialize the node as the liberty user:
+```bash
+sudo -u liberty geth --datadir /home/liberty/liberty init /home/liberty/liberty/genesis.json
+```
+
+### 7. Create a Systemd Service File
+
+Create the file /etc/systemd/system/liberty-node.service with the following content:
 ```bash
 sudo nano /etc/systemd/system/liberty-node.service
 ```
 
+Insert the following content:
 ```ini
-[Unit]
-Description=Liberty Node
-After=network.target
+    [Unit]
+    Description=Liberty Node
+    After=network.target
 
-[Service]
-User=liberty
-Restart=on-failure
-RestartSec=10
-ExecStart=/bin/geth --datadir ~/liberty \
---networkid=21102 \
---port 40404 \
---http.api debug,web3,eth,txpool,net \
---mine \
---miner.threads=1 
---miner.etherbase=<miner address> \
---gcmode=archive \
---bootnodes "enode://8b7cf2ff6d30e7fe7f1b8bfd67193844504144cb002f1a369326d8cd16227f2c2a0a73ee0e658dac2663b92e1af7e2fbae8a46388dfd5db602f704ee56ca8d57@94.142.138.78:40404"
+    [Service]
+    User=liberty
+    Restart=on-failure
+    RestartSec=10
+    ExecStart=/usr/local/bin/geth --datadir /home/liberty/liberty \
+    --networkid 21102 \
+    --port 40404 \
+    --http.api debug,web3,eth,txpool,net \
+    --mine \
+    --miner.threads 1 \
+    --miner.etherbase <miner address> \
+    --gcmode archive \
+    --bootnodes "enode://8b7cf2ff6d30e7fe7f1b8bfd67193844504144cb002f1a369326d8cd16227f2c2a0a73ee0e658dac2663b92e1af7e2fbae8a46388dfd5db602f704ee56ca8d57@94.142.138.78:40404"
+    LimitNOFILE=4096
 
-Restart=always
-RestartSec=10
-LimitNOFILE=4096
-
-[Install]
-WantedBy=default.target
+    [Install]
+    WantedBy=default.target
 ```
+Note: Replace <miner address> with your miner's Ethereum address.
 
-**Note:** Replace `<miner address>` with your miner's Ethereum address.
-
-### 6. Download and initialize the genesis file
-
+### 6.  Enable and Start the Service
+Reload systemd to recognize the new service:
 ```bash
-curl -L https://github.com/LibertyProject-chain/Liberty-Project-testnet-phase-2/releases/download/v0.23/genesis.json -o ~/liberty/genesis.json
-geth --datadir ~/liberty init ~/liberty/genesis.json
+sudo systemctl daemon-reload
 ```
 
-
-
-### 7. Enable and Start the Service
-
+Enable and start the node service:
 ```bash
-systemctl daemon-reload
-systemctl enable liberty-node
-systemctl start liberty-node
+sudo systemctl enable liberty-node
+sudo systemctl start liberty-node
 ```
 
-### 8. Check Status and Logs
+### 6. Check Status and Logs
 
 To check the status of the node:
-
 ```bash
-systemctl status liberty-node
+sudo systemctl status liberty-node
 ```
 
 To view the logs:
-
 ```bash
-journalctl -u liberty-node -f --no-hostname -o cat
+sudo journalctl -u liberty-node -f --no-hostname -o cat 
 ```
 
 ## Command to Run Geth Manually
